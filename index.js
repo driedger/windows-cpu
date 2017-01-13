@@ -77,8 +77,10 @@
     findLoad = exports.findLoad = function findLoad(arg, cb) {
         if(!isFunction(cb)) cb = emptyFn;
         if(!checkPlatform(cb)) return;
-        
-        var cmd = "wmic path Win32_PerfFormattedData_PerfProc_Process get Name,PercentProcessorTime,IDProcess | findstr /i /c:" + arg;
+        var cmd = "wmic path Win32_PerfFormattedData_PerfProc_Process get Name,PercentProcessorTime,IDProcess";
+        if(arg && typeof(arg)==="string") cmd+="  | findstr /i /c:" + arg;
+        else if(arg && Array.isArray(arg)) cmd+=' | findstr /i /r "' + arg.join(' ')+'"';
+		console.log(cmd);
         exec(cmd, function (error, res, stderr) {
             if(error !== null || stderr) return cb(error || stderr);
             if(!res) return cb('Cannot find results for provided arg: ' + arg, { load: 0, results: [] });
@@ -87,17 +89,17 @@
                 return !!v;
             }).map(function(v) {
                 var data = v.split(':');
-                return {
-                    pid: +data[0],
-                    process: data[1],
-                    load: +data[2]
-                };
+				return {
+					pid: +data[0],
+					process: data[1],
+					load: +data[2]
+				};
             });
             
             var totalLoad = 0;
             
             found.forEach(function(obj) {
-                totalLoad += obj.load;
+				totalLoad += obj.load;
             });
             
             var output = {

@@ -145,7 +145,7 @@ Gets the total load in percent for process(es) by a specific search parameter.
 
 **Parameters**
 
-**arg**: *string|number*, Specific search parameter. Can be a Process ID or Process Name.
+**arg**: *string|number|array*, Specific search parameter. Can be a Process ID, Process Name, or Array of Processes.
 
 **cb**:  *function*,  A callback function to handle the results (error, results).
 
